@@ -3,6 +3,9 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Project;
+use App\Models\Task;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,11 +15,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        $admin = User::factory()->create([
+            'name' => '管理者ユーザー',
+            'email' => 'admin@example.com',
+            // 'role' => '管理者',
+        ]);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $users = User::factory()->count(3)->create();
+
+        Project::factory()
+            ->count(2)
+            ->create()
+            ->each(function ($project) use ($users) {
+                Task::factory()
+                    ->count(5)
+                    ->create([
+                        'project_id' => $project->id,
+                        'user_id' => $users->random()->id,
+                    ]);
+            });
     }
 }
